@@ -30,9 +30,18 @@ const userRepository={
 const express=require("express");
 const app=express();
 const route=express.Router();
+const session=require("express-session");
+app.use(session({
+    secret:'secret',
+    saveUninitialized:true,
+    resave:true
+}));
+
+
 route.get("/",(req,res)=>res.send('Hola'));
 route.get("/users",async (req,res)=>{
     try{
+        console.log(req.session.mensaje);
         const users=await userRepository.findAllUsers();
         res.json(users)
     } catch(e){
@@ -44,7 +53,8 @@ route.post("/users",async (req,res)=>{
     try{
         const newUser=req.body;
         const user=await userRepository.createUser(newUser);
-        res.json(user)
+        req.session.mensaje='puedes caracterizar a esta sesióm'
+        res.json(user);
     } catch(e){
         console.log(e);
     }
@@ -55,7 +65,7 @@ app.use('/',route);
 
 
 
-
+console.log('qué bien que la estoy pasando');
 
 app.listen(3000,console.log('servidor corriendo en el puerto 3000'))
 
